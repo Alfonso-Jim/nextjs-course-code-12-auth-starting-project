@@ -4,6 +4,7 @@ import { connectToDatabase } from '../../../lib/db';
 import { verifyPassword } from '../../../lib/auth';
 
 export const authOptions = {
+  secret: process.env.AUTH_SECRET,
   session: [
     {
       jwt: true,
