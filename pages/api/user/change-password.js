@@ -1,25 +1,27 @@
-import { getSession } from 'next-auth/react';
+import { authOptions } from '../auth/[...nextauth]';
+import { getServerSession } from 'next-auth';
 import { hashPassword, verifyPassword } from '../../../lib/auth';
 import { connectToDatabase } from '../../../lib/db';
 
 const handler = async (req, res) => {
-  const client = await connectToDatabase();
-  const usersCollection = client.db().collection('users');
-  const user = await usersCollection.findOne({ email: credentials.email });
-  const session = await getSession({ req: req });
-
-  const userEmail = session.user.email;
-  const oldPassword = req.body.oldPassword;
-  const newPassword = req.body.newPassword;
-
   if (req.method !== 'PATCH') {
     return;
   }
+
+  const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
     res.status(401).json({ message: 'Not authenticated!' });
     return;
   }
+
+  const userEmail = session.user.email;
+  const oldPassword = req.body.oldPassword;
+  const newPassword = req.body.newPassword;
+
+  const client = await connectToDatabase();
+  const usersCollection = client.db().collection('users');
+  const user = await usersCollection.findOne({ email: userEmail });
 
   if (!user) {
     res.status(404).json({ message: 'User not found!' });
