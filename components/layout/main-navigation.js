@@ -5,8 +5,6 @@ import { signOut, useSession } from 'next-auth/react';
 
 function MainNavigation() {
   const { data: session, status } = useSession();
-  console.log(session);
-  console.log(status);
   const logoutHandler = async () => {
     await signOut();
   };
